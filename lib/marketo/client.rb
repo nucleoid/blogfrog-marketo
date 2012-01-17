@@ -71,6 +71,21 @@ module Rapleaf
         get_lead(LeadKey.new(LeadKeyType::EMAIL, email))
       end
 
+      def get_leads(options = {})
+        begin
+          @logger.debug "#get_leads(#{options})"
+          response = send_request("ns1:paramsGetMultipleLeads", options)
+          leads = []
+          response[:success_get_multiple_leads][:result][:lead_record_list][:lead_record].each do |savon_hash|
+            leads << LeadRecord.from_hash(savon_hash)
+          end
+          return leads
+        rescue => e
+          @logger.log(e) if @logger
+          raise e
+        end
+      end
+
       def set_logger(logger)
         @logger = logger
       end
