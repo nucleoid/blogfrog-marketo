@@ -3,7 +3,7 @@ require File.expand_path('authentication_header', File.dirname(__FILE__))
 module Rapleaf
   module Marketo
     
-    def self.new_client(access_key, secret_key, api_version='1.7', api_subdomain='na-c')
+    def self.new_client(access_key, secret_key, api_version='2.0', api_subdomain='na-p')
       
       api_version = api_version.sub(".", "_")
       client = Savon::Client.new do
@@ -73,8 +73,7 @@ module Rapleaf
 
       def get_leads(options = {})
         begin
-          @logger.debug "#get_leads(#{options})"
-          response = send_request("ns1:paramsGetMultipleLeads", options)
+          response = send_request("ns1:paramsGetMultipleLeads", { :paramsGetMultipleLeads => options.to_hash })
           leads = []
           response[:success_get_multiple_leads][:result][:lead_record_list][:lead_record].each do |savon_hash|
             leads << LeadRecord.from_hash(savon_hash)
@@ -119,7 +118,7 @@ module Rapleaf
           response = send_request("ns1:paramsSyncLead", {
               :return_lead => true,
               :lead_record =>
-                  {:email               => lead_record.email,
+                  {:email => lead_record.email,
                    :lead_attribute_list => {
                        :attribute => attributes}}})
           return LeadRecord.from_hash(response[:success_sync_lead][:result][:lead_record])

@@ -10,6 +10,8 @@ require File.expand_path('marketo/authentication_header', File.dirname(__FILE__)
 require File.expand_path('marketo/enums', File.dirname(__FILE__))
 require File.expand_path('marketo/lead_key', File.dirname(__FILE__))
 require File.expand_path('marketo/lead_record', File.dirname(__FILE__))
+require File.expand_path('marketo/lead_selector', File.dirname(__FILE__))
+require File.expand_path('marketo/params_get_multiple_leads', File.dirname(__FILE__))
 
 
 

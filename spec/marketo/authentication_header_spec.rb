@@ -1,11 +1,11 @@
-require File.expand_path('../spec_helper', File.dirname(__FILE__))
+require 'spec_helper'
 
 module Rapleaf
   module Marketo
-    ACCESS_KEY = 'ACCESS_KEY'
-    SECRET_KEY = 'SECRET_KEY'
-
     describe AuthenticationHeader do
+      ACCESS_KEY = 'ACCESS_KEY'
+      SECRET_KEY = 'SECRET_KEY'
+
       it "should set mktowsUserId to access key" do
         header = Rapleaf::Marketo::AuthenticationHeader.new(ACCESS_KEY, SECRET_KEY)
         header.get_mktows_user_id.should == ACCESS_KEY
@@ -33,8 +33,8 @@ module Rapleaf
         header     = Rapleaf::Marketo::AuthenticationHeader.new(access_key, secret_key)
         header.set_time(DateTime.new(2010, 4, 9, 14, 4, 55, -7/24.0))
 
-        header.get_request_timestamp.should == '2010-04-09T14:04:54-07:00'
-        header.get_request_signature.should == 'ffbff4d4bef354807481e66dc7540f7890523a87'
+        header.get_request_timestamp.should == '2010-04-09T14:04:55-07:00'
+        header.get_request_signature.should == '22482bf9379da438ec9f4e274a38e96d5f2509d0'
       end
 
       it "should cope if no date is given" do

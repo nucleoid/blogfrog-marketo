@@ -1,4 +1,4 @@
-require File.expand_path('../spec_helper', File.dirname(__FILE__))
+require 'spec_helper'
 
 module Rapleaf
   module Marketo
@@ -11,24 +11,6 @@ module Rapleaf
       COMPANY = 'Rapleaf'
       MOBILE  = '415 123 456'
       API_KEY = 'API123KEY'
-
-      context 'Exception handling' do
-        it "should return nil if any exception is raised on get_lead request" do
-          savon_client          = mock('savon_client').as_null_object
-          authentication_header = mock('authentication_header').as_null_object
-          client                = Rapleaf::Marketo::Client.new(savon_client, authentication_header)
-          savon_client.should_receive(:request).and_raise Exception
-          client.get_lead_by_email(EMAIL).should be_nil
-        end
-
-        it "should return nil if any exception is raised on sync_lead request" do
-          savon_client          = mock('savon_client').as_null_object
-          authentication_header = mock('authentication_header').as_null_object
-          client                = Rapleaf::Marketo::Client.new(savon_client, authentication_header)
-          savon_client.should_receive(:request).and_raise Exception
-          client.sync_lead(EMAIL, FIRST, LAST, COMPANY, MOBILE).should be_nil
-        end
-      end
 
       context 'Client interaction' do
         it "should have the correct body format on get_lead_by_idnum" do
@@ -149,22 +131,22 @@ module Rapleaf
           expect_request(savon_client,
                          authentication_header,
                          equals_matcher({
-                                            :return_lead => true,
-                                            :lead_record => {
-                                                :email               => EMAIL,
-                                                :lead_attribute_list =>
-                                                    {
-                                                        :attribute => [
-                                                            {:attr_value => "val1",
-                                                             :attr_name  => "name1",
-                                                             :attr_type  => "string"},
-                                                            {:attr_value => "val2",
-                                                             :attr_name  => "name2",
-                                                             :attr_type  => "string"},
-                                                            {:attr_value => EMAIL,
-                                                             :attr_name  => "Email",
-                                                             :attr_type  => "string"}
-                                                        ]}}}),
+                            :return_lead => true,
+                            :lead_record => {
+                                :email               => EMAIL,
+                                :lead_attribute_list =>
+                                    {
+                                        :attribute => [
+                                            {:attr_value => EMAIL,
+                                             :attr_name  => "Email",
+                                             :attr_type  => "string"},
+                                            {:attr_value => "val1",
+                                             :attr_name  => "name1",
+                                             :attr_type  => "string"},
+                                            {:attr_value => "val2",
+                                             :attr_name  => "name2",
+                                             :attr_type  => "string"}
+                                        ]}}}),
                          'ns1:paramsSyncLead',
                          response_hash)
           lead_record = LeadRecord.new(EMAIL)
@@ -251,6 +233,59 @@ module Rapleaf
           expected_lead_record.set_attribute('name3', 'val3')
           expected_lead_record.set_attribute('name4', 'val4')
           client.sync_lead(EMAIL, FIRST, LAST, COMPANY, MOBILE).should == expected_lead_record
+        end
+
+        it "should have the correct body format on get_leads" do
+          savon_client          = mock('savon_client')
+          authentication_header = mock('authentication_header')
+          client                = Rapleaf::Marketo::Client.new(savon_client, authentication_header)
+          response_hash         = {
+              :success_get_multiple_leads => {
+                  :result => {
+                      :count            => 2,
+                      :lead_record_list => {
+                          :lead_record => [
+                          {
+                              :email                 => EMAIL,
+                              :lead_attribute_list   => {
+                                  :attribute => [
+                                      {:attr_name => 'name1', :attr_type => 'string', :attr_value => 'val1'},
+                                      {:attr_name => 'name2', :attr_type => 'string', :attr_value => 'val2'},
+                                      {:attr_name => 'name3', :attr_type => 'string', :attr_value => 'val3'},
+                                      {:attr_name => 'name4', :attr_type => 'string', :attr_value => 'val4'}
+                                  ]
+                              },
+                              :foreign_sys_type      => nil,
+                              :foreign_sys_person_id => nil,
+                              :id                    => IDNUM.to_s
+                          },
+                          {
+                              :email                 => "some-other@email.com",
+                              :lead_attribute_list   => {
+                                  :attribute => [
+                                      {:attr_name => 'name1', :attr_type => 'string', :attr_value => 'val1'},
+                                      {:attr_name => 'name2', :attr_type => 'string', :attr_value => 'val2'},
+                                      {:attr_name => 'name3', :attr_type => 'string', :attr_value => 'val3'},
+                                      {:attr_name => 'name4', :attr_type => 'string', :attr_value => 'val4'}
+                                  ]
+                              },
+                              :foreign_sys_type      => nil,
+                              :foreign_sys_person_id => nil,
+                              :id                    => 52.to_s
+                          }
+                      ]}
+                  }
+              }
+          }
+
+          expect_request(savon_client,
+                         authentication_header,
+                         equals_matcher({ :paramsGetMultipleLeads => { :lead_selector => { :static_list_name => 'some list' } } }),
+                         'ns1:paramsGetMultipleLeads',
+                         response_hash)
+          leads = client.get_leads(ParamsGetMultipleLeads.new(LeadSelector::StaticListSelector.new 'some list'))
+          leads.size.should eq 2
+          leads.first.email.should eq EMAIL
         end
 
         context "list operations" do
