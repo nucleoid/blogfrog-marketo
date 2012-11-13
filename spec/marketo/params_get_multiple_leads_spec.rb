@@ -23,7 +23,8 @@ module Rapleaf
       it "should to_hash with required parameters correctly" do
         params = ParamsGetMultipleLeads.new(list_selector)
 
-        params.to_hash.should eq({ :lead_selector => { :static_list_name => list_name } })
+        params.to_hash.should eq({ :lead_selector => { :static_list_name => "some list" },
+                                   :attributes! => { :lead_selector => { "xsi:type" => "ns1:StaticListSelector" }}})
       end
 
       it "should to_hash with all parameters correctly" do
@@ -31,6 +32,7 @@ module Rapleaf
 
         params.to_hash.should eq({
                                      :lead_selector => { :static_list_name => list_name },
+                                     :attributes! => { :lead_selector => { "xsi:type" => "ns1:StaticListSelector" }},
                                      :last_updated_at => '2012-11-01T00:00:00-00:00',
                                      :stream_position => '50',
                                      :batch_size => 500,

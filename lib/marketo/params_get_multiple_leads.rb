@@ -44,7 +44,8 @@ module Rapleaf
 
       # create a hash from this instance, for sending this object to marketo using savon
       def to_hash
-        hash = { :lead_selector => @lead_selector.to_hash }       #2012-11-01T00:00:00-00:00
+        hash = { :lead_selector => @lead_selector.to_hash,
+                 :attributes! => { :lead_selector => { 'xsi:type' => @lead_selector.type } } }
         hash[:last_updated_at] = @last_updated_at.strftime("%Y-%m-%dT%H:%M:%S-00:00")    if @last_updated_at
         hash[:stream_position] = @stream_position if @stream_position
         hash[:batch_size] = @batch_size if @batch_size

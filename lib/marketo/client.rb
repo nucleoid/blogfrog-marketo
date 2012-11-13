@@ -73,7 +73,7 @@ module Rapleaf
 
       def get_leads(options = {})
         begin
-          response = send_request("ns1:paramsGetMultipleLeads", { :paramsGetMultipleLeads => options.to_hash })
+          response = send_request("ns1:paramsGetMultipleLeads", options.to_hash )
           leads = []
           response[:success_get_multiple_leads][:result][:lead_record_list][:lead_record].each do |savon_hash|
             leads << LeadRecord.from_hash(savon_hash)

@@ -23,6 +23,12 @@ module Rapleaf
 
           list_selector.to_hash.should eq({ :static_list_id => list_id })
         end
+
+        it "should retrieve correct type" do
+          list_selector = StaticListSelector.new(list_id)
+
+          list_selector.type.should eq 'ns1:StaticListSelector'
+        end
       end
 
       describe LastUpdateAtSelector do

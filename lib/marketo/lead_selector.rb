@@ -15,6 +15,11 @@ module Rapleaf
           @list_identifier
         end
 
+        # get the xsi:type
+        def type
+          'ns1:StaticListSelector'
+        end
+
         # create a hash from this instance, for sending this object to marketo using savon
         def to_hash
           @list_identifier.is_a?(Integer) ? { :static_list_id => @list_identifier } : { :static_list_name => @list_identifier }

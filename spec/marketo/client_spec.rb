@@ -280,7 +280,8 @@ module Rapleaf
 
           expect_request(savon_client,
                          authentication_header,
-                         equals_matcher({ :paramsGetMultipleLeads => { :lead_selector => { :static_list_name => 'some list' } } }),
+                         equals_matcher({ :lead_selector => { :static_list_name => "some list" },
+                                          :attributes! => { :lead_selector => { "xsi:type" => "ns1:StaticListSelector" }}}),
                          'ns1:paramsGetMultipleLeads',
                          response_hash)
           leads = client.get_leads(ParamsGetMultipleLeads.new(LeadSelector::StaticListSelector.new 'some list'))
